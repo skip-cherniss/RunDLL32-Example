@@ -36,3 +36,12 @@
 Debug/
 Debug/**
 **/Debug/
+Debug/vc142.pdb
+Debug/RunDLL32-Example.dll.recipe
+*.log
+*.tlog
+Debug/RunDLL32-Example.tlog/RunDLL32-Example.lastbuildstate
+*.tlog
+Debug/RunDLL32-Example.vcxproj.FileListAbsolute.txt
+Debug/vc142.idb
+Debug/vc142.pdb

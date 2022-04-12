@@ -1,0 +1,4 @@
+LIBRARY RunDLL32-StartJump
+EXPORTS
+	jump
+	jumpload
