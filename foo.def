@@ -1,0 +1,4 @@
+LIBRARY RunDLL32-Example
+EXPORTS
+	sayHello
+	popUp
