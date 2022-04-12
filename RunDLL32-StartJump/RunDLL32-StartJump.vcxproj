@@ -144,7 +144,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="jump.cpp" />
-    <ClCompile Include="RunDLL32-StartJump.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="jump.def" />

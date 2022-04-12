@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="RunDLL32-Example.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="foo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -32,6 +29,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="myCode.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="foo.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

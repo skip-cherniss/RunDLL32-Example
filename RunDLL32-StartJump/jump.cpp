@@ -1,3 +1,16 @@
+/*
+	@file jump.cpp
+	@author Skip Cherniss
+	@github https://github.com/skip-cherniss/RunDLL32-Example
+
+	This file contains two different functions which are exported and can be called from rundll32
+		jumpload
+		jump
+	This framework can be copied and tweaked to support redteam testing.
+	The companion DLL, RunDLL32-Example, is contained in this solution
+	Read the function summaries below for more detail
+*/
+
 #include <iostream>
 #include <windows.h>
 #include "jump.h"
@@ -11,6 +24,25 @@
 // demonstrating function with two parameters
 typedef int(__cdecl* POPUP)(LPWSTR,int);
 
+/// <summary>
+/// RunDLL32-StartJump.dll jumpload function
+/// The jumpload function can be launched from rundll32.exe to load a different dll into this process
+/// The second dll is hardcoded to RunDLL32-Example in this routine. 
+/// You can remove the hard coding and parameterize the dll
+/// 
+/// Format:
+/// rundll32.exe RunDLL32-StartJump.dll, jumpload <messsage to pass to RunDLL32-Example.dll popup>
+/// 
+/// Example with parameters:
+/// rundll32.exe RunDLL32-StartJump.dll, jumpload Seabees CAN DO!!
+/// 
+/// Example without parameters:
+/// rundll32.exe RunDLL32-StartJump.dll, jump RunDLL32-Example.dll sayHello
+/// </summary>
+/// <param name="hwnd"></param>
+/// <param name="hinst"></param>
+/// <param name="lpszCmdLine">The command line parameter. Everything after "rundll32.exe RunDLL32-StartJump.dll, jump"</param>
+/// <param name="nCmdShow"></param>
 void CALLBACK jumpload(HWND hwnd, HINSTANCE hinst, LPSTR lpszCmdLine, int nCmdShow)
 {
 	HINSTANCE hinstLib;
@@ -62,11 +94,21 @@ void CALLBACK jumpload(HWND hwnd, HINSTANCE hinst, LPSTR lpszCmdLine, int nCmdSh
 }
 
 /// <summary>
-/// This example is called from rundll32, creates another process rundll32 and starts a different dll
+/// RunDLL32-StartJump.dll jump function
+/// The jump function can be launched from rundll32.exe to start a different dll with rundll32.exe
+/// Format:
+/// rundll32.exe RunDLL32-StartJump.dll, jump <name of second DLL> <function> <paramter list separated by spaces>
+/// 
+/// Example with parameters:
+/// rundll32.exe RunDLL32-StartJump.dll, jump RunDLL32-Example.dll sayHello hello1 hello2 hello3
+/// 
+/// Example without parameters:
+/// rundll32.exe RunDLL32-StartJump.dll, jump RunDLL32-Example.dll sayHello
+/// 
 /// </summary>
 /// <param name="hwnd"></param>
 /// <param name="hinst"></param>
-/// <param name="lpszCmdLine"></param>
+/// <param name="lpszCmdLine">The command line parameter. Everything after "rundll32.exe RunDLL32-StartJump.dll, jump"</param>
 /// <param name="nCmdShow"></param>
 void CALLBACK jump(HWND hwnd, HINSTANCE hinst, LPSTR lpszCmdLine, int nCmdShow)
 {
@@ -76,8 +118,7 @@ void CALLBACK jump(HWND hwnd, HINSTANCE hinst, LPSTR lpszCmdLine, int nCmdShow)
 	freopen_s(&fDummy, "CONIN$", "r", stdin);
 	freopen_s(&fDummy, "CONOUT$", "w", stderr);
 	freopen_s(&fDummy, "CONOUT$", "w", stdout);
-
-	
+		
 	STARTUPINFO startInfo = { 0 };
 
 	PROCESS_INFORMATION processInfo = { 0 };
@@ -98,19 +139,11 @@ void CALLBACK jump(HWND hwnd, HINSTANCE hinst, LPSTR lpszCmdLine, int nCmdShow)
 		&si,            // Pointer to STARTUPINFO structure
 		&pi )           // Pointer to PROCESS_INFORMATION structure
 	*/
-
-	// Completely works - This will not require passing in parameters, this is hard coded
-	// Sourced From https://social.msdn.microsoft.com/Forums/en-US/dd6770ed-b53e-45bc-8943-e3fea4c3fc61/how-to-wait-for-child-process-when-createprocess-creates-2-process-viz-run32dll-process-which?forum=vcgeneral
-	//wchar_t appSt[] = L"rundll32 \"D:\\@Snapshot\\@RedTeamPlayground\\RunDLL32-Example\\Debug\\RunDLL32-Example.dll\" sayHello";	
-	
-	// Completely works
-	// must use starting directory, this will not require passing in parameters this is hard coded
-	// TEXT("D:\\@Snapshot\\@RedTeamPlayground\\RunDLL32-Example\\Debug")
-	//wchar_t appSt[] = L"rundll32 RunDLL32-Example.dll sayHello hello1 hello2 hello3";
-			
+				
 	std::wstring cmdLine = L"rundll32 ";
 	cmdLine += std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(lpszCmdLine);
 
+	// It is necessary to change the data type from string to wchar_t when passing this value to CreateProcess
 	// https://cboard.cprogramming.com/cplusplus-programming/78614-std-wstring-wchar_t-*.html
 	wchar_t* wcs =  const_cast<wchar_t*>(cmdLine.c_str());
 		
@@ -158,6 +191,8 @@ void CALLBACK jump(HWND hwnd, HINSTANCE hinst, LPSTR lpszCmdLine, int nCmdShow)
 		
 	}
 
+	// Use the following for testing the jump framework
+	// When you are certain this is linking properly to your secondary dll, remove the following lines
 	std::cout << lpszCmdLine << std::endl;
 
 	std::string response;
@@ -165,12 +200,8 @@ void CALLBACK jump(HWND hwnd, HINSTANCE hinst, LPSTR lpszCmdLine, int nCmdShow)
 	std::cout << "Would you like to play a game?" << std::endl;
 	std::cin >> response;
 
-	/*std::string response;
 
-	std::cout << "Would you like to play a game?" << std::endl;
-	std::cin >> response;*/
-
+	// Keep the following lines
 	std::cout.clear();
-
 	FreeConsole();
 }

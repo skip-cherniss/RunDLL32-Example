@@ -18,9 +18,6 @@
     <ClCompile Include="jump.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RunDLL32-StartJump.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="jump.def">

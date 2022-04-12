@@ -146,12 +146,12 @@
   <ItemGroup>
     <ClCompile Include="foo.cpp" />
     <ClCompile Include="myCode.cpp" />
-    <ClCompile Include="RunDLL32-Example.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="foo.def" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="foo.h" />
     <ClInclude Include="myCode.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -1,6 +1,18 @@
-// File [foo.cpp]
+/*
+    @file foo.cpp
+    @author Skip Cherniss
+    @github https://github.com/skip-cherniss/RunDLL32-Example
+
+    This file contains two different functions which are exported and can be called from rundll32
+        popup (Can only be dynamically loaded)
+        sayHello
+    This framework can be copied and tweaked to support redteam testing.
+    The companion DLL, RunDLL32-StartJump, is contained in this solution
+    Read the function summaries below for more detail
+*/
 #include <iostream>
 #include  "myCode.h"
+#include "foo.h"
 
 #undef UNICODE
 #define UNICODE
@@ -9,15 +21,21 @@
 // **************************************************************************************
 // * rundll32.exe RunDLL32-Example.dll, sayHello test test test
 // **************************************************************************************
-extern "C" __declspec(dllexport) int __cdecl popUp(LPWSTR, int);
-
-extern "C" __declspec(dllexport) void CALLBACK sayHello(HWND, HINSTANCE, LPSTR, int);
 
 /// <summary>
-/// example cmd line call rundll32.exe RunDLL32-StartJump.dll, jumpload Seabees CAN DO!!
+/// RunDLL32-Example.dll popup function
+/// The popup function can be launched to display a message from the windows message box function
+/// This function can only be loaded are called inside the same project. The function definition
+/// does not support being calledby rundll32
+/// 
+/// Format:
+/// popup <messsage to pass to popup>, #
+/// 
+/// Example with parameters:
+/// popup Seabees CAN DO!!, 2
 /// </summary>
-/// <param name="lpszMsg"></param>
-/// <param name="loopCount"></param>
+/// <param name="lpszMsg">the message to display</param>
+/// <param name="loopCount">the number of times to display the message</param>
 /// <returns></returns>
 int __cdecl popUp(LPWSTR lpszMsg, int loopCount)
 {
@@ -38,41 +56,22 @@ int __cdecl popUp(LPWSTR lpszMsg, int loopCount)
     return 0;
 }
 
-//extern "C"
-//__declspec(dllexport)
-//void CALLBACK sayHello(HWND, HINSTANCE, wchar_t const*, int)
-
-//void CALLBACK sayHello(HWND, HINSTANCE, LPSTR, int)
+/// <summary>
+/// RunDLL32-Example.dll sayHello function
+/// The popup function can be launched from rundll32.exe to display a message from the cmdline
+/// 
+/// Format:
+/// rundll32.exe RunDLL32-Example.dll, sayHello <messsage to pass to cmdline>
+/// 
+/// Example with parameters:
+/// rundll32.exe RunDLL32-Example.dll, sayHello hello1 hello2 hello3
+/// </summary>
+/// <param name="hwnd"></param>
+/// <param name="hinst"></param>
+/// <param name="lpszCmdLine">the message to display</param>
+/// <param name="nCmdShow"></param>
 void CALLBACK sayHello(HWND hwnd, HINSTANCE hinst, LPSTR lpszCmdLine, int nCmdShow)
 {
-    
-    // Severity	Code Error	C4996	
-    // Description          'freopen': This function or variable may be unsafe.Consider using freopen_s instead.To disable deprecation, use _CRT_SECURE_NO_WARNINGS.See online help for details.RunDLL32 - Example	
-    // Project	File        D:\@Snapshot\@RedTeamPlayground\RunDLL32 - Example\RunDLL32 - Example\foo.cpp		
-    // Line	23
-    /*
-    freopen("CONIN$", "r", stdin);
-    freopen("CONOUT$", "w", stdout);
-    freopen("CONOUT$", "w", stderr);
-    */
-
-    /*
-    
-     _ACRTIMP FILE* __cdecl freopen(
-        _In_z_  char const* _FileName,
-        _In_z_  char const* _Mode,
-        _Inout_ FILE*       _Stream
-        );
-
-    _Check_return_wat_
-        _ACRTIMP errno_t __cdecl freopen_s(
-            _Outptr_result_maybenull_ FILE * *_Stream,
-            _In_z_                    char const* _FileName,
-            _In_z_                    char const* _Mode,
-            _Inout_                   FILE * _OldStream
-        );
-    */
-
     AllocConsole();
 
     FILE* fDummy;
@@ -111,28 +110,5 @@ void CALLBACK sayHello(HWND hwnd, HINSTANCE hinst, LPSTR lpszCmdLine, int nCmdSh
     std::cout.clear();
 
     FreeConsole();
-
-    /*
-    FILE* fpin;
-    FILE* fpout;
-
-    AllocConsole();
-
-    freopen_s(&fpin, "CONIN$", "r", stdin);
-    freopen_s(&fpout, "CONOUT$", "w", stdout);
-    freopen_s(&fpout, "CONOUT$", "w", stdout);
-    
-    DWORD const infoBoxOptions = MB_ICONINFORMATION | MB_SETFOREGROUND;
-    MessageBox(0, L"Before call...", L"DLL message:", infoBoxOptions);
-    myCode::sayHello();
-    MessageBox(0, L"After call...", L"DLL message:", infoBoxOptions);
-
-    std::cout.clear();
-    fclose(fpin);
-    fclose(fpout);
-    
-    FreeConsole();
-    */
-    // https://stackoverflow.com/questions/15543571/allocconsole-not-displaying-cout
 
 }
