@@ -33,3 +33,4 @@
 
 # Ignore Visual Studio folder
 .vs/
+Debug/*
